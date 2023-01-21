@@ -9,3 +9,5 @@
 #团圆领红包助力
 11 11 11 11 * jd_ty_help.js, tag=团圆领红包助力, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/jd.png, enabled=true
 ```
+if __name__ == "__main__":
+    print("111111")
