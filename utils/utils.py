@@ -6,7 +6,6 @@ import yaml
 
 config = {
     'RANDOM_SLEEP': '',
-    'TASKS_TG_USER_ID': '',
     'EMBY_DEFAULT_USERNAME': '',
     'EMBY_DEFAULT_PASSWORD': '',
     'EMBY_DEFAULT_DEVICE_ID': '',
