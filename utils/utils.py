@@ -55,7 +55,7 @@ def notify(title, content):
         import notify
         ttui = config.get('TASKS_TG_USER_ID')
         if ttui is not None and ttui != '':
-            notify.push_config['TASKS_TG_USER_ID'] = ttui
+            notify.push_config['TG_USER_ID'] = ttui
         notify.send(title, content)
     else:
         print(content)
