@@ -225,7 +225,8 @@ def get_embys():
 def main():
     try:
         embys = get_embys()
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
         tasks = []
         for i in embys:
             tasks.append(asyncio.ensure_future(active(i)))
