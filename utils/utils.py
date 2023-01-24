@@ -5,7 +5,7 @@ import time
 import yaml
 
 config = {
-    'SLEEP_RANGE': '',
+    'RANDOM_SLEEP': '',
     'EMBY_DEFAULT_USERNAME': '',
     'EMBY_DEFAULT_PASSWORD': '',
     'EMBY_DEFAULT_DEVICE_ID': '',
@@ -30,8 +30,16 @@ for k in config:
 print('配置文件:' + str(config))
 
 
-def random_sleep(a, b):
-    time.sleep(random.randint(a, b))
+def random_sleep_int():
+    rs = config.get('RANDOM_SLEEP')
+    rr = [0, 3600]
+    if rs is not None and rs != '':
+        rr = str(rs).split('-')
+    try:
+        ri = random.randint(int(rr[0]), int(rr[1]))
+        return ri
+    except Exception as e:
+        print('随机延迟配置错误,请用0-3600的格式:' + str(e))
 
 
 def get_china_time(time_str):
@@ -43,8 +51,11 @@ def get_china_time(time_str):
 
 def notify(title, content):
     if os.path.exists('notify.py'):
-        from notify import send
-        send(title, content)
+        import notify
+        ttui = config.get('TASKS_TG_USER_ID')
+        if ttui is not None and ttui != '':
+            notify.push_config['TASKS_TG_USER_ID'] = ttui
+        notify.send(title, content)
     else:
         print(content)
 

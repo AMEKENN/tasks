@@ -1,0 +1,10 @@
+TASKS_TG_USER_ID: 123
+RANDOM_SLEEP: 1-5
+EMBY_DEFAULT_USERNAME: username
+EMBY_DEFAULT_PASSWORD: 123456789
+EMBY_DEFAULT_DEVICE_ID: 818af7284397ba29
+EMBY_DEFAULT_USER_AGENT: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36'
+EMBY: "\
+        url=http://10.0.1.3:8096;info=Bot:@bot 群组:@group&\
+        url=http://10.0.1.3:8096;info=Bot:@bot 群组:@test\
+      "

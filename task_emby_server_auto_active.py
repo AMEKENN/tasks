@@ -3,9 +3,11 @@
 cron: 0 8 * * *
 new Env('Emby保持活动');
 """
+import asyncio
+
 import requests
 
-from utils.utils import get_config, get_china_time, notify
+from utils.utils import get_config, random_sleep_int, get_china_time, notify
 
 TASK_NAME = 'Emby保持活动'
 
@@ -158,7 +160,9 @@ class Emby:
         return response
 
 
-def active(emby: Emby):
+async def active(emby: Emby):
+    rs = random_sleep_int()
+    await asyncio.sleep(rs)
     token = None
     try:
         # 登陆
@@ -170,14 +174,15 @@ def active(emby: Emby):
         last_activity_date = auth_json['User']['LastActivityDate']
         # 更新信息
         emby.full(token)
-        msg = '服务器:' + emby.url + \
+        msg = '延迟执行:' + str(rs) + 's' + \
+              '\n服务器:' + emby.url + \
               '\n最后登录时间:' + get_china_time(last_login_date) + \
               '\n最后活动时间:' + get_china_time(last_activity_date) + \
-              '\n' + emby.info
+              '\n' + str(emby.info)
         notify(TASK_NAME, msg)
     # 异常处理
     except Exception as e:
-        print("活跃失败:" + str(e))
+        notify(TASK_NAME, "活跃失败:" + str(e))
     finally:
         if token is not None:
             emby.logout(token)
@@ -220,8 +225,11 @@ def get_embys():
 def main():
     try:
         embys = get_embys()
+        loop = asyncio.get_event_loop()
+        tasks = []
         for i in embys:
-            active(i)
+            tasks.append(asyncio.ensure_future(active(i)))
+        loop.run_until_complete(asyncio.wait(tasks))
     except Exception as e:
         print("配置文件可能有误\n" + str(e))
 
