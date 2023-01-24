@@ -5,6 +5,7 @@ import time
 import yaml
 
 config = {
+    'TASKS_TG_USER_ID': '',
     'RANDOM_SLEEP': '',
     'EMBY_DEFAULT_USERNAME': '',
     'EMBY_DEFAULT_PASSWORD': '',
