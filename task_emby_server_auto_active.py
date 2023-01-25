@@ -226,7 +226,7 @@ def get_embys():
             emby = Emby(url, username, password, device_id, user_agent, info)
             embys.append(emby)
         except Exception as e:
-            raise Exception('配置文件可能有误\n请检查:' + str(i) + ' ' + str(e))
+            print('配置文件可能有误\n请检查:' + str(i) + ' ' + str(e))
     return embys
 
 

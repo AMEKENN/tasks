@@ -34,13 +34,14 @@ print('配置文件:' + str(config))
 def random_sleep_int():
     rs = config.get('RANDOM_SLEEP')
     rr = [0, 3600]
+    ri = 0
     if rs is not None and rs != '':
         rr = str(rs).split('-')
     try:
         ri = random.randint(int(rr[0]), int(rr[1]))
-        return ri
     except Exception as e:
         print('随机延迟配置错误,请用0-3600的格式:' + str(e))
+    return ri
 
 
 def get_china_time(time_str):
