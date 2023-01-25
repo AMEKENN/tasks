@@ -1,6 +1,6 @@
 # -- coding:UTF-8 --
 """
-cron: 0 8 * * *
+cron: 0 12 * * *
 new Env('Emby保持活动');
 """
 import asyncio
