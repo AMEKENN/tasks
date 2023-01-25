@@ -164,6 +164,8 @@ async def active(emby: Emby):
     rs = random_sleep_int()
     await asyncio.sleep(rs)
     token = None
+    msg = '延迟执行:' + str(rs) + 's' + \
+          '\n服务器:' + emby.url
     try:
         # 登陆
         auth = emby.auth()
@@ -174,18 +176,21 @@ async def active(emby: Emby):
         last_activity_date = auth_json['User']['LastActivityDate']
         # 更新信息
         emby.full(token)
-        msg = '延迟执行:' + str(rs) + 's' + \
-              '\n服务器:' + emby.url + \
+        msg = msg + \
               '\n最后登录时间:' + get_china_time(last_login_date) + \
               '\n最后活动时间:' + get_china_time(last_activity_date) + \
               '\n' + str(emby.info)
-        notify(TASK_NAME, msg)
     # 异常处理
     except Exception as e:
-        notify(TASK_NAME, "活跃失败:" + str(e))
-    finally:
-        if token is not None:
+        msg = msg + "活跃失败:" + str(e)
+
+    if token is not None:
+        try:
             emby.logout(token)
+        except Exception as e:
+            msg = msg + '\n' + str(e)
+
+    notify(TASK_NAME, msg)
 
 
 def get_embys():
@@ -193,46 +198,46 @@ def get_embys():
     emby_str = config.get('EMBY').split('&')
     embys = []
     for i in emby_str:
-        # 解析emby属性
-        emby_dic = {}
-        for j in i.split(";"):
-            s = j.split("=")
-            emby_dic[s[0]] = s[1]
-        # 赋值属性
-        url = emby_dic['url']
-        username = config.get('EMBY_DEFAULT_USERNAME')
-        password = config.get('EMBY_DEFAULT_PASSWORD')
-        device_id = config.get('EMBY_DEFAULT_DEVICE_ID')
-        user_agent = config.get('EMBY_DEFAULT_USER_AGENT')
-        info = config.get('EMBY_DEFAULT_INFO')
+        try:
+            # 解析emby属性
+            emby_dic = {}
+            for j in i.split(";"):
+                s = j.split("=")
+                emby_dic[s[0]] = s[1]
+            # 赋值属性
+            url = emby_dic['url']
+            username = config.get('EMBY_DEFAULT_USERNAME')
+            password = config.get('EMBY_DEFAULT_PASSWORD')
+            device_id = config.get('EMBY_DEFAULT_DEVICE_ID')
+            user_agent = config.get('EMBY_DEFAULT_USER_AGENT')
+            info = config.get('EMBY_DEFAULT_INFO')
 
-        if 'username' in emby_dic and emby_dic['username']:
-            username = emby_dic['username']
-        if 'password' in emby_dic and emby_dic['password']:
-            password = emby_dic['password']
-        if 'device_id' in emby_dic and emby_dic['device_id']:
-            device_id = emby_dic['device_id']
-        if 'user_agent' in emby_dic and emby_dic['user_agent']:
-            user_agent = emby_dic['user_agent']
-        if 'info' in emby_dic and emby_dic['info']:
-            info = emby_dic['info']
+            if 'username' in emby_dic and emby_dic['username']:
+                username = emby_dic['username']
+            if 'password' in emby_dic and emby_dic['password']:
+                password = emby_dic['password']
+            if 'device_id' in emby_dic and emby_dic['device_id']:
+                device_id = emby_dic['device_id']
+            if 'user_agent' in emby_dic and emby_dic['user_agent']:
+                user_agent = emby_dic['user_agent']
+            if 'info' in emby_dic and emby_dic['info']:
+                info = emby_dic['info']
 
-        emby = Emby(url, username, password, device_id, user_agent, info)
-        embys.append(emby)
+            emby = Emby(url, username, password, device_id, user_agent, info)
+            embys.append(emby)
+        except Exception as e:
+            raise Exception('配置文件可能有误\n请检查:' + str(i) + ' ' + str(e))
     return embys
 
 
 def main():
-    try:
-        embys = get_embys()
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        tasks = []
-        for i in embys:
-            tasks.append(asyncio.ensure_future(active(i)))
-        loop.run_until_complete(asyncio.wait(tasks))
-    except Exception as e:
-        print("配置文件可能有误\n" + str(e))
+    embys = get_embys()
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    tasks = []
+    for i in embys:
+        tasks.append(asyncio.ensure_future(active(i)))
+    loop.run_until_complete(asyncio.wait(tasks))
 
 
 if __name__ == "__main__":
