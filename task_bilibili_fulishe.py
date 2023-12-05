@@ -46,5 +46,7 @@ data = {
     'csrf': cookies.get('bili_jct')
 }
 
+print(cookies.get('bili_jct'))
+
 response = requests.post('https://app.bilibili.com/x/wall/unicom/order/pack/receive', headers=headers, data=data)
 notify(config.get('TASKS_TG_USER_ID'), TASK_NAME, str(response.json()))
